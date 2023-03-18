@@ -4,6 +4,7 @@ assignment-two-2023-mooreTomas created by GitHub Classroom
 
 ## Adding Python code here, currently have GET (get all, get one) and POST working with this
 
+```sh
 import requests
 import json
 
@@ -53,3 +54,7 @@ if __name__ == '__main__':
     getonecust()
     getAll()
     postCustomer()
+    
+    
+    
+    ```
