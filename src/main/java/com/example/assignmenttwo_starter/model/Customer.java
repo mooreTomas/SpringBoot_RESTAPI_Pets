@@ -1,11 +1,15 @@
 package com.example.assignmenttwo_starter.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -18,7 +22,9 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "customers")
-public class Customer implements Serializable {
+public class Customer extends RepresentationModel<Customer>{
+
+
 
     @Id
     @NotNull

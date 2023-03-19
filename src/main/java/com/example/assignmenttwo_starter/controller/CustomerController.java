@@ -34,12 +34,11 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<List<Customer>> getAllCustomers() {
         List<Customer> list = customerService.findAllCustomers();
 
         if(list.isEmpty()){
-            System.out.println("empty");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         } else {
@@ -48,7 +47,7 @@ public class CustomerController {
         }
     }
 
-    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<Customer> getOne(@PathVariable long id){
         Optional<Customer> aCustomer = customerService.findOneCustomer(id);
 
@@ -59,6 +58,38 @@ public class CustomerController {
         }
 
     }
+
+    @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity addCustomer (@RequestBody Customer c){
+        customerService.saveCustomer(c);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity editCustomer  (@RequestBody Customer c){
+        customerService.saveCustomer(c);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{pageNo}/{pageSize}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE} )
+    public ResponseEntity getAll2(@PathVariable int pageNo, @PathVariable int pageSize){
+        List<Customer> list = customerService.findAllPaginated(pageNo, pageSize);
+        if(list.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        } else {
+
+            return ResponseEntity.ok(list);
+        }
+
+    }
+
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity deleteCustomer(@PathVariable long customerId){
+        customerService.deleteById(customerId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 
 
 
