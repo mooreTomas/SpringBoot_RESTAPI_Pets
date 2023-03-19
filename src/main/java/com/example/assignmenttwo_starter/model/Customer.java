@@ -22,7 +22,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "customers")
-public class Customer extends RepresentationModel<Customer>{
+public class Customer extends RepresentationModel<Customer> implements Serializable{
 
 
 

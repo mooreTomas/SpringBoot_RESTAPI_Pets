@@ -44,5 +44,10 @@ public class CustomerService {
         customerRepo.deleteById(customerId);
     }
 
+    public List<Customer> getOrdersByCustomerId(String id){
+        return customerRepo.getOrdersByCustomerId(id);
+
+    }
+
 
 }
