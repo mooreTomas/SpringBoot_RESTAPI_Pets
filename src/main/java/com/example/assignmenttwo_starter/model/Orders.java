@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "orders")
-public class Orders implements Serializable {
+public class Orders extends RepresentationModel<Orders> implements Serializable {
 
     @Id
     @Basic(optional = false)

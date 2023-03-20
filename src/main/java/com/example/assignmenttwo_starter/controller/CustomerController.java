@@ -2,11 +2,13 @@ package com.example.assignmenttwo_starter.controller;
 
 
 import com.example.assignmenttwo_starter.model.Customer;
+import com.example.assignmenttwo_starter.model.Orders;
 import com.example.assignmenttwo_starter.service.CustomerService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.assignmenttwo_starter.service.OrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -37,6 +39,9 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private OrdersService orderService;
 
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<List<Customer>> getAllCustomers() {
@@ -96,7 +101,7 @@ public class CustomerController {
                 Link selfLink2 = linkTo(methodOn(CustomerController.class).getOne(customer.getCustomerId())).withSelfRel();
                 customer.add(selfLink);
 
-                // Generate custom link
+
                 Link customLink = WebMvcLinkBuilder.linkTo(CustomerController.class).slash("order").slash(customer.getCustomerId()).withRel("order");
                 customer.add(customLink);
             }

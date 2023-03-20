@@ -1,10 +1,7 @@
 package com.example.assignmenttwo_starter.model;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -68,11 +65,13 @@ public class Customer extends RepresentationModel<Customer> implements Serializa
 
     @OneToMany(mappedBy = "customerId")
     @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ToString.Exclude
     private List<Review> reviewCollection;
 
     @OneToMany(mappedBy = "customerId")
     @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ToString.Exclude
     private List<Orders> ordersCollection;
 }
