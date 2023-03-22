@@ -23,7 +23,6 @@ def GetAll():
     print(json.dumps(customers, indent=4))
 
 
-
 # define input parameter here
 
 def GetOneCust():
@@ -78,6 +77,7 @@ if __name__ == '__main__':
     GetOneCust()
     GetAll()
     PostCustomer()
+
 
     
     
