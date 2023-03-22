@@ -11,10 +11,10 @@ import java.util.List;
 @Service
 public class OrderItemService {
 
-    @Autowired
-    private OrderItemRepository orderItemRepository;
+    //@Autowired
+    //private OrderItemRepository orderItemRepository;
 
-    public List<OrderItem> findOrderItemByOrOrderByOrderId(String id){
-        return orderItemRepository.findOrderItemByOrOrderByOrderId(id);
-    }
+  //  public List<OrderItem> findOrderItemByOrOrderByOrderId(String id){
+    //    return orderItemRepository.findOrderItemByOrOrderByOrderId(id);
+   // }
 }

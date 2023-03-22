@@ -3,6 +3,7 @@ package com.example.assignmenttwo_starter.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -46,16 +47,19 @@ public class Product  implements Serializable {
 
     @OneToMany(mappedBy = "productId")
     @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ToString.Exclude
     private List<Review> reviewCollection;
 
     @OneToMany(mappedBy = "productId")
     @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ToString.Exclude
     private List<OrderItem> orderItemCollection;
 
     @JoinColumn(name = "categogy_id", referencedColumnName = "category_id")
     @ManyToOne(optional = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonBackReference
     @ToString.Exclude
     private Category categoryId;
