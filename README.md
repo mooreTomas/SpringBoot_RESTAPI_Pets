@@ -3,6 +3,7 @@ assignment-two-2023-mooreTomas created by GitHub Classroom
 
 
 ## Adding Python code here, currently have GET (get all, get one) and POST working with this
+## Python code now allows user to select which method to run. POST method now allows user-specified input
 
 ```sh
 import requests
@@ -58,25 +59,33 @@ def validateInput(user_input):
 
 def PostCustomer():
     headers = {"Content-Type": "application/json"}
-    data = {
-        "customerId": 999999,
-        "firstName": "Mary",
-        "lastName": "aaaaa",
-        "email": "mking@hotmail.com",
-        "phone": "0869876543",
-        "address": "456 High Street",
-        "city": "London",
-        "country": "United Kingdom",
-        "postcode": "W1B 2ES"
-    }
+    data = {"customerId": input("Enter customer ID: "), "firstName": input("Enter customer first name: "),
+            "lastName": input("Enter customer last name: "), "email": input("Enter customer email: "),
+            "phone": input("Enter customer phone: "), "address": input("Enter customer address: "),
+            "city": input("Enter customer city: "), "country": input("Enter customer country: "),
+            "postcode": input("Enter customer postcode: ")}
+
     response = requests.post(SERVER_URL + CONTROLLER_METHOD, headers=headers, json=data)
     print("POST method response: ", response.status_code)
 
 
+
 if __name__ == '__main__':
-    GetOneCust()
-    GetAll()
-    PostCustomer()
+    valid_input = False
+
+    while not valid_input:
+        user_input = input("Enter an integer value to specify which method to run: ")
+        valid_input = validateInput(user_input)
+        if not valid_input:
+            print("Please try again. Not a valid input.")
+
+    if user_input == "1":
+        GetOneCust()
+    elif user_input == "2":
+        GetAll()
+    elif user_input == "3":
+        PostCustomer()
+
 
 
     
