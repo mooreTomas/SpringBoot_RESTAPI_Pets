@@ -12,8 +12,13 @@ import com.example.assignmenttwo_starter.service.CustomerService;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -40,14 +46,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -71,6 +70,9 @@ public class CustomerController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private MessageSource messageSource;
 
 
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -207,7 +209,15 @@ public class CustomerController {
     // id 34 has items and order information (for testing)
 
     @GetMapping(value = "/invoice/{orderId}", produces  = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE} )
-    public ResponseEntity<String> generateInvoice(@PathVariable long orderId) {
+    public ResponseEntity<String> generateInvoice(@PathVariable long orderId, @RequestHeader(value="Accept-Language", required=false) Locale locale) {
+
+        // find order
+        // check status (return bad request if not processing or pending)
+        // then get customer and orderItem collection via the customer id in Orders and orderItemCollection in Orders
+        // generate basic invoice format with gets from Orders and Customer
+        // for loop to get the productId for each orderItem, use this to get Product name(s), quantity, price and total
+        // finally generate the footer and return the <String> ResponseEntity
+
         Optional<Orders> optionalOrder = orderService.findById(orderId);
         if (optionalOrder.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -220,39 +230,49 @@ public class CustomerController {
         if (!"pending".equals(status.getStatus().toLowerCase()) &&
                 !"processing".equals(status.getStatus().toLowerCase())) {
             return ResponseEntity.badRequest().body("Invoice can only be generated for orders with status 'Pending' or 'Processing'");
+        } else {
+
+            Customer customer = order.getCustomerId();
+            List<OrderItem> items = order.getOrderItemCollection();
+
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(messageSource.getMessage("date.format", null, locale));
+            String formattedDate = order.getOrderDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(formatter);
+
+
+            // Generate the invoice header
+            String invoiceTitle = messageSource.getMessage("invoice.title", null, locale);
+            String invoice = String.format("%s:\n\n%s: %d\n%s: %s\n%s: %s %s\n\n",
+                    invoiceTitle, messageSource.getMessage("invoice.orderId", null, locale), order.getOrderId(),
+                    messageSource.getMessage("invoice.date", null, locale), formattedDate,
+                    messageSource.getMessage("invoice.customer", null, locale), customer.getFirstName(), customer.getLastName());
+
+            // Generate the invoice body for each order item
+            BigDecimal grandTotal = BigDecimal.ZERO;
+            for (OrderItem item : items) {
+                Product product = item.getProductId();
+                BigDecimal itemTotal = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+                grandTotal = grandTotal.add(itemTotal);
+
+                invoice += String.format("%s - %d x $%.2f = $%.2f\n",
+                        product.getName(), item.getQuantity(), item.getPrice(), itemTotal);
+            }
+
+            // Generate the invoice footer with the grand total
+            String localisedTotal = messageSource.getMessage("invoice.total", null, locale);
+            invoice += String.format("\n" + localisedTotal +": $%.2f\n", grandTotal);
+
+
+
+            String message = messageSource.getMessage("invoice.thanks", null, locale);
+            invoice += message;
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity<>(invoice, headers, HttpStatus.OK);
         }
-
-        Customer customer = order.getCustomerId();
-        List<OrderItem> items = order.getOrderItemCollection();
-
-        // Generate the invoice header
-        String invoice = String.format("INVOICE:\n\nOrder ID: %d\nDate: %s\nCustomer: %s %s\n\n",
-                order.getOrderId(), order.getOrderDate(), customer.getFirstName(), customer.getLastName());
-
-        // Generate the invoice body for each order item
-        BigDecimal grandTotal = BigDecimal.ZERO;
-        for (OrderItem item : items) {
-            Product product = item.getProductId();
-            BigDecimal itemTotal = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-            grandTotal = grandTotal.add(itemTotal);
-
-            invoice += String.format("%s - %d x $%.2f = $%.2f\n",
-                    product.getName(), item.getQuantity(), item.getPrice(), itemTotal);
-        }
-
-        // Generate the invoice footer with the grand total
-        invoice += String.format("\nTotal: $%.2f\n", grandTotal);
-        String message = "Go raibh maith agat!";
-        invoice += message;
-
-
-
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity<>(invoice, headers, HttpStatus.OK);
     }
-
 
 
 

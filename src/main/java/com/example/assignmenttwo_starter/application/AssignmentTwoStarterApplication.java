@@ -1,11 +1,17 @@
 package com.example.assignmenttwo_starter.application;
 
 import com.example.assignmenttwo_starter.repository.CustomerRepository;
+import com.example.assignmenttwo_starter.repository.OrderItemRepository;
+import com.example.assignmenttwo_starter.repository.OrdersRepository;
+import com.example.assignmenttwo_starter.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
@@ -17,6 +23,22 @@ public class AssignmentTwoStarterApplication {
 
     @Autowired
     private CustomerRepository customerRepo;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private OrdersRepository ordersRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        return messageSource;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(AssignmentTwoStarterApplication.class, args);
