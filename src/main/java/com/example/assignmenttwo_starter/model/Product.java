@@ -9,6 +9,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+// stack overflow error issue, see below for more, this addresses it
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -21,6 +25,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+
+// addresses stack overflow issuer
+// tells Jackson to use specified ID to uniquely identify the productId
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "productId")
 public class Product  implements Serializable {
 
     @Id
@@ -63,4 +73,5 @@ public class Product  implements Serializable {
     @JsonBackReference
     @ToString.Exclude
     private Category categoryId;
+
 }

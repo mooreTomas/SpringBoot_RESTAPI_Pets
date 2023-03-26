@@ -89,16 +89,18 @@ public class CustomerController {
         }
     }
 
-    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<Customer> getOne(@PathVariable long id) {
-        Optional<Customer> aCustomer = customerService.findOneCustomer(id);
-
-        if (!aCustomer.isPresent()) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
+    @GetMapping(value = "/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity getOneCustomer(@PathVariable long customerId) {
+        Optional<Customer> c = customerService.findOneCustomer(customerId);
+        if (!c.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return ResponseEntity.ok(aCustomer.get());
+            // gets all with pagination appropriate to the customerId (instead of listing everything in one result)
+            long paginationValue = customerId/10 + 1;
+            Link link = linkTo(methodOn(CustomerController.class).getAllPagination((int) paginationValue, 10)).withSelfRel();
+            c.get().add(link);
+            return ResponseEntity.ok(c.get());
         }
-
     }
 
     @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -123,7 +125,7 @@ public class CustomerController {
 
             Link selfLink = linkTo(methodOn(CustomerController.class).getAllPagination(pageNo, pageSize)).withSelfRel();
             List<EntityModel<Customer>> customerModels = list.stream()
-                    .map(customer -> EntityModel.of(customer, linkTo(methodOn(CustomerController.class).getOne(customer.getCustomerId())).withSelfRel()))
+                    .map(customer -> EntityModel.of(customer, linkTo(methodOn(CustomerController.class).getOneCustomer(customer.getCustomerId())).withSelfRel()))
                     .collect(Collectors.toList());
 
             // create a CollectionModel to represent the collection of customers
@@ -131,7 +133,7 @@ public class CustomerController {
 
             for (Customer customer : list) {
                 // Generate self link
-                Link selfLink2 = linkTo(methodOn(CustomerController.class).getOne(customer.getCustomerId())).withSelfRel();
+                Link selfLink2 = linkTo(methodOn(CustomerController.class).getOneCustomer(customer.getCustomerId())).withSelfRel();
                 customer.add(selfLink);
 
 
@@ -189,17 +191,7 @@ public class CustomerController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/hateoas/{customerId}", produces = MediaTypes.HAL_JSON_VALUE)
-    public ResponseEntity getCustomerHATEOAS(@PathVariable long customerId) {
-        Optional<Customer> c = customerService.findOneCustomer(customerId);
-        if (!c.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            Link link = linkTo(methodOn(CustomerController.class).getAllPagination(0, 10)).withSelfRel();
-            c.get().add(link);
-            return ResponseEntity.ok(c.get());
-        }
-    }
+
 
     // id 34 has items and order information (for testing)
 

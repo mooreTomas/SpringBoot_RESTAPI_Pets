@@ -2,10 +2,15 @@ package com.example.assignmenttwo_starter.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -18,6 +23,9 @@ import java.math.BigDecimal;
 @ToString
 @Entity
 @Table(name = "order_items")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "orderItemId")
 public class OrderItem  implements Serializable {
 
     @Id
@@ -40,7 +48,8 @@ public class OrderItem  implements Serializable {
 
     @JoinColumn(name = "product_id", referencedColumnName = "product_id")
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @ToString.Exclude
     private Product productId;
+
 }
