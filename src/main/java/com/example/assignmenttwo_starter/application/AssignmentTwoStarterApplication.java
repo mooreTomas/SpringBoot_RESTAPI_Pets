@@ -4,8 +4,10 @@ import com.example.assignmenttwo_starter.repository.CustomerRepository;
 import com.example.assignmenttwo_starter.repository.OrderItemRepository;
 import com.example.assignmenttwo_starter.repository.OrdersRepository;
 import com.example.assignmenttwo_starter.repository.ProductRepository;
+import com.example.assignmenttwo_starter.service.AwsStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.MessageSource;
@@ -14,10 +16,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+
+
+
 @SpringBootApplication
-@ComponentScan({"com.example.assignmenttwo_starter.service", "com.example.assignmenttwo_starter.controller", "com.example.assignmenttwo_starter.repository"})
+@ComponentScan({"com.example.assignmenttwo_starter.service", "com.example.assignmenttwo_starter.controller", "com.example.assignmenttwo_starter.repository", "com.example.assignmenttwo_starter.config"})
 @EntityScan("com.example.assignmenttwo_starter.model")
 @EnableJpaRepositories("com.example.assignmenttwo_starter.repository")
+
 
 public class AssignmentTwoStarterApplication {
 
@@ -32,6 +38,7 @@ public class AssignmentTwoStarterApplication {
 
     @Autowired
     private ProductRepository productRepository;
+
 
     @Bean
     public MessageSource messageSource() {
