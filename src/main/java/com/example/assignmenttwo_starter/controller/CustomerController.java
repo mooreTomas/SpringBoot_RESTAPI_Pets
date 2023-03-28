@@ -148,18 +148,30 @@ public class CustomerController {
 
     }
 
-    // returns empty if no order exists for that customer
-    // contains order information, and order item collection info
+    // returns error String if customer doesn't exist
+    // returns error String if order exists but collection is empty
+    // otherwise returns order with associated products
     @GetMapping(value = "/order/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<List<Orders>> getCustomerOrderInfo(@PathVariable long id) {
+    public ResponseEntity<?> getCustomerOrderInfo(@PathVariable long id) {
         Optional<Customer> optionalCustomer = customerService.findOneCustomer(id);
-
-        if (optionalCustomer.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (!optionalCustomer.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body("This customer doesn't exist!");
         } else {
             List<Orders> orders = optionalCustomer.get().getOrdersCollection();
+            if (orders.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body("No orders found for Customer " + id + "!");
+            }
             for (Orders order : orders) {
                 List<OrderItem> orderItems = order.getOrderItemCollection();
+                if (orderItems.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .contentType(MediaType.TEXT_PLAIN)
+                            .body("Order(s) exist(s), but order item collection is empty!");
+                }
                 for (OrderItem orderItem : orderItems) {
                     Product product = orderItem.getProductId();
                     orderItem.setProductId(product);
@@ -168,6 +180,8 @@ public class CustomerController {
             return ResponseEntity.ok(orders);
         }
     }
+
+
 
 
     // get all order to tests prior method
@@ -211,7 +225,10 @@ public class CustomerController {
 
         Optional<Orders> optionalOrder = orderService.findById(orderId);
         if (optionalOrder.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            String errorMessage = messageSource.getMessage("order.notfound", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(errorMessage);
         }
 
         Orders order = optionalOrder.get();
