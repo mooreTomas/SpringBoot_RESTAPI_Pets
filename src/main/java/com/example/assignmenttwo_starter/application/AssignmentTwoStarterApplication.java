@@ -1,9 +1,6 @@
 package com.example.assignmenttwo_starter.application;
 
-import com.example.assignmenttwo_starter.repository.CustomerRepository;
-import com.example.assignmenttwo_starter.repository.OrderItemRepository;
-import com.example.assignmenttwo_starter.repository.OrdersRepository;
-import com.example.assignmenttwo_starter.repository.ProductRepository;
+import com.example.assignmenttwo_starter.repository.*;
 import com.example.assignmenttwo_starter.service.AwsStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -38,6 +35,9 @@ public class AssignmentTwoStarterApplication {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private DogRepository dogRepository;
 
 
     @Bean

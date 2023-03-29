@@ -26,4 +26,9 @@ public class ImageData {
     @Lob
     @Column(name = "imagedata",length = 1000)
     private byte[] imageData;
+
+    // associate customer with image
+    @OneToOne
+    @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
+    private Customer customer;
 }

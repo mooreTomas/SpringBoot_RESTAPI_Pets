@@ -215,7 +215,7 @@ public class CustomerController {
 
     public ResponseEntity<?> generateInvoice(@PathVariable long orderId, @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
-        // find order
+        // find order, check if exists first
         // check status (return bad request if not processing or pending)
         // then get customer and orderItem collection via the customer id in Orders and orderItemCollection in Orders
         // generate basic invoice format with gets from Orders and Customer
@@ -264,7 +264,7 @@ public class CustomerController {
                             .setFontSize(18);
                     document.add(title);
 
-                    // ... (existing code for creating the invoice body)
+
 
                     String invoiceDetails = String.format("%s: %d\n%s: %s\n%s: %s %s\n%s: %s\n\n",
                             messageSource.getMessage("invoice.orderId", null, locale), order.getOrderId(),

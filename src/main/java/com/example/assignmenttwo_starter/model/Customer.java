@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
+import com.example.assignmenttwo_starter.model.Dog;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -74,4 +76,15 @@ public class Customer extends RepresentationModel<Customer> implements Serializa
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ToString.Exclude
     private List<Orders> ordersCollection;
+
+    // associate with imageData
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private ImageData imageData;
+
+    // list of dogs the customer owns
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @ToString.Exclude
+    private List<Dog> dogs;
 }
