@@ -1,6 +1,8 @@
 package com.example.assignmenttwo_starter.controller;
 
+import com.example.assignmenttwo_starter.model.Dog;
 import com.example.assignmenttwo_starter.model.ImageData;
+import com.example.assignmenttwo_starter.service.DogService;
 import com.example.assignmenttwo_starter.service.ImageDataService;
 import com.example.assignmenttwo_starter.service.StorageService;
 import com.example.assignmenttwo_starter.service.CustomerService;
@@ -32,37 +34,39 @@ public class ImageController {
     @Autowired
     private ImageDataService imageDataService;
 
-    @PostMapping("/{customerId}")
-    public ResponseEntity<?> uploadImage(@PathVariable Integer customerId, @RequestParam("image") MultipartFile file) throws IOException {
-        Optional<Customer> optionalCustomer = customerService.findOneCustomer(customerId.longValue());
-        if (!optionalCustomer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body("This customer doesn't exist!");
+    @Autowired
+    private DogService dogService;
+
+    @PostMapping("/{customerId}/{dogName}")
+    public ResponseEntity<?> uploadImage(@PathVariable Integer customerId, @PathVariable String dogName, @RequestParam("file") MultipartFile file) {
+        Optional<Customer> customerOptional = customerService.findOneCustomer(Long.valueOf(customerId));
+        if (!customerOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
         }
 
-        // Get the original file name (e.g., 1111.png)
-        String originalFileName = file.getOriginalFilename();
+        Optional<Dog> dogOptional = dogService.findDogByNameAndCustomerId(dogName, customerId);
+        if (!dogOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dog not found, try again!");
+        }
 
-        Customer customer = optionalCustomer.get();
+        Dog dog = dogOptional.get();
 
-        // Create ImageData instance
-        ImageData imageData = ImageData.builder()
-                .name(originalFileName)
-                .type(file.getContentType())
-                .imageData(file.getBytes())
-                .customer(customer)
-                .build();
+        // Process the image and save it
+        ImageData imageData = new ImageData();
+        imageData.setDog(dog); // Associate the image with the dog
+        imageData.setImageName(file.getOriginalFilename());
+        imageData.setImageType(file.getContentType());
 
-        // Save ImageData instance
+        try {
+            imageData.setImageData(file.getBytes());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing the image");
+        }
+
         imageDataService.save(imageData);
 
-        // Associate customer with the uploaded image
-        customer.setImageData(imageData);
-        customerService.saveCustomer(customer);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Image uploaded successfully: " + originalFileName);
+        String ownerName = customerOptional.get().getFirstName();
+        return ResponseEntity.status(HttpStatus.CREATED).body("An image of " + ownerName + "'s dog, " + dog.getName() + " was successfully uploaded");
     }
 
 
@@ -76,29 +80,7 @@ public class ImageController {
 
     }
 
-    // returns images associated with a customer
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<?> getImageByCustomerId(@PathVariable Integer customerId) {
-        Optional<Customer> optionalCustomer = customerService.findOneCustomer(customerId.longValue());
-        if (!optionalCustomer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body("This customer doesn't exist!");
-        }
 
-        Customer customer = optionalCustomer.get();
-        ImageData imageData = customer.getImageData();
-
-        if (imageData == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body("No image(s) associated with this customer!");
-        }
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf(imageData.getType()))
-                .body(imageData.getImageData());
-    }
 
 
 }

@@ -39,6 +39,9 @@ public class AssignmentTwoStarterApplication {
     @Autowired
     private DogRepository dogRepository;
 
+    @Autowired
+    private DogShowRegistrationRepository dogShowRegistrationRepository;
+
 
     @Bean
     public MessageSource messageSource() {

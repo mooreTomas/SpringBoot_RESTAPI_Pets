@@ -77,14 +77,11 @@ public class Customer extends RepresentationModel<Customer> implements Serializa
     @ToString.Exclude
     private List<Orders> ordersCollection;
 
-    // associate with imageData
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
-    @JsonBackReference
-    private ImageData imageData;
 
     // list of dogs the customer owns
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ToString.Exclude
     private List<Dog> dogs;
 }

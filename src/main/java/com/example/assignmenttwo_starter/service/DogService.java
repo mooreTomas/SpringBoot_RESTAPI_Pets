@@ -31,4 +31,11 @@ public class DogService {
     public void deleteById(long dogId){
         dogRepository.deleteById(dogId);
     }
+
+    public Optional<Dog> findDogByNameAndCustomerId(String dogName, Integer customerId) {
+        return dogRepository.findDogByNameAndCustomerCustomerId(dogName, customerId);
+    }
+
+
+
 }

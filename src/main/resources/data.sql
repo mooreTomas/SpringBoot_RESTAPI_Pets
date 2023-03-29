@@ -478,3 +478,17 @@ INSERT INTO `reviews` (`review_id`, `product_id`, `customer_id`, `rating`, `comm
 (64, 3, 121, 5, 'Great quality. One happy customer and pet.'),
 (65, 7, 123, 4, 'Well-made and priced just about right.'),
 (66, 10, 127, 4, 'My pet loved this.');
+
+--
+--  inserting data for dogs... mainly to test methods
+--
+
+INSERT INTO `dogs` (`id`, `name`, `vaccinated`, `customer_id`)
+VALUES
+    (1, 'Buddy', true, 1),
+    (2, 'Daisy', true, 1),
+    (3, 'Max', true, 2),
+    (4, 'Bella', false, 2);;
+
+
+INSERT INTO dog_show_registrations (event_date, customer_id, dog_id) VALUES ('2023-05-01', 1, 1);

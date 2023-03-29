@@ -2,12 +2,16 @@ package com.example.assignmenttwo_starter.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -16,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ImageData {
+public class ImageData extends RepresentationModel<ImageData> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,8 +31,18 @@ public class ImageData {
     @Column(name = "imagedata",length = 1000)
     private byte[] imageData;
 
-    // associate customer with image
-    @OneToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
-    private Customer customer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dog_id")
+    @JsonBackReference
+    private Dog dog;
+
+
+
+    public void setImageName(String imageName) {
+        this.name = imageName;
+    }
+
+    public void setImageType(String imageType) {
+        this.type = imageType;
+    }
 }
