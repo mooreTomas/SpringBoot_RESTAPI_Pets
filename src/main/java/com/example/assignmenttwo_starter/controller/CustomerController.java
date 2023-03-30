@@ -27,6 +27,9 @@ import com.example.assignmenttwo_starter.service.ProductService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
@@ -77,6 +80,11 @@ public class CustomerController {
     private MessageSource messageSource;
 
     @Cacheable(value = "customerCache", key = "'getAllCustomers'")
+    @ApiOperation(value = "Get all customers", notes = "Returns a list of all customers in the system")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list of customers"),
+            @ApiResponse(code = 404, message = "No customers found")
+    })
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<List<Customer>> getAllCustomers() {
         List<Customer> list = customerService.findAllCustomers();
@@ -92,6 +100,11 @@ public class CustomerController {
 
 
     @GetMapping(value = "/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ApiOperation(value = "Get a single customer", notes = "Returns a single customer by ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved customer"),
+            @ApiResponse(code = 404, message = "Customer not found")
+    })
     public ResponseEntity getOneCustomer(@PathVariable long customerId) {
         Optional<Customer> c = customerService.findOneCustomer(customerId);
         if (!c.isPresent()) {
@@ -106,18 +119,33 @@ public class CustomerController {
     }
 
     @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ApiOperation(value = "Add a new customer", notes = "Creates a new customer in the system")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Customer created successfully"),
+            @ApiResponse(code = 400, message = "Invalid input data")
+    })
     public ResponseEntity addCustomer(@RequestBody Customer c) {
         customerService.saveCustomer(c);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @PutMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ApiOperation(value = "Edit an existing customer", notes = "Updates an existing customer in the system")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Customer updated successfully"),
+            @ApiResponse(code = 400, message = "Invalid input data")
+    })
     public ResponseEntity editCustomer(@RequestBody Customer c) {
         customerService.saveCustomer(c);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping(value = "/{pageNo}/{pageSize}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaTypes.HAL_JSON_VALUE})
+    @ApiOperation(value = "Get a paginated list of customers", notes = "Returns a list of customers with pagination support")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved paginated customer list"),
+            @ApiResponse(code = 404, message = "No customers found for the given page number and page size")
+    })
     public ResponseEntity getAllPagination(@PathVariable int pageNo, @PathVariable int pageSize) {
         List<Customer> list = customerService.findAllPaginated(pageNo, pageSize);
         if (list.isEmpty()) {
@@ -155,6 +183,11 @@ public class CustomerController {
     // otherwise returns order with associated products
 
     @GetMapping(value = "/order/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ApiOperation(value = "Get customer order information", notes = "Returns a list of orders for a specific customer")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved customer order information"),
+            @ApiResponse(code = 404, message = "No orders found for the given customer ID")
+    })
     public ResponseEntity<?> getCustomerOrderInfo(@PathVariable long id) {
         Optional<Customer> optionalCustomer = customerService.findOneCustomer(id);
         if (!optionalCustomer.isPresent()){
@@ -190,6 +223,10 @@ public class CustomerController {
     // get all order to tests prior method
     @Cacheable (value = "customerCache", key = "'getAllOrders'")
     @GetMapping(value = "/orders", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ApiOperation(value = "Get a list of all orders", notes = "Returns a list of all orders")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list of all orders")
+    })
     public ResponseEntity<List<Orders>> getAllOrders() {
         List<Orders> orders = orderService.findAllOrders();
         for (Orders order : orders) {
@@ -204,6 +241,11 @@ public class CustomerController {
 
 
     @DeleteMapping("/{customerId}")
+    @ApiOperation(value = "Delete a customer by ID", notes = "Deletes a customer with the specified ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Customer successfully deleted"),
+            @ApiResponse(code = 404, message = "Customer not found for the given ID")
+    })
     public ResponseEntity deleteCustomer(@PathVariable long customerId) {
         customerService.deleteById(customerId);
         return new ResponseEntity(HttpStatus.OK);
@@ -216,6 +258,12 @@ public class CustomerController {
 
 
     @GetMapping(value = "/invoice/{orderId}", produces = {MediaType.APPLICATION_PDF_VALUE, MediaType.TEXT_PLAIN_VALUE})
+    @ApiOperation(value = "Generate invoice", notes = "Generates a PDF invoice for the specified order. Returns the PDF file as a byte array.")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Invoice generated successfully"),
+            @ApiResponse(code = 400, message = "Order status is not 'processing' or 'pending', or order item collection is empty"),
+            @ApiResponse(code = 404, message = "Order not found")
+    })
 
     public ResponseEntity<?> generateInvoice(@PathVariable long orderId, @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
@@ -326,7 +374,13 @@ public class CustomerController {
 
 
 
-        @PutMapping("")
+    @PutMapping("")
+    @ApiOperation(value = "Edit a customer", notes = "Updates the details of an existing customer.")
+    @ApiResponses({
+                @ApiResponse(code = 200, message = "Customer updated successfully"),
+                @ApiResponse(code = 400, message = "Invalid request payload"),
+                @ApiResponse(code = 404, message = "Customer not found")
+        })
     public ResponseEntity edit(@RequestBody Customer c) {
         customerService.saveCustomer(c);
         return new ResponseEntity<>(HttpStatus.OK);
