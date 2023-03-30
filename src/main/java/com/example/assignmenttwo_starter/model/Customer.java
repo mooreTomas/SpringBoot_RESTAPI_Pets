@@ -80,8 +80,7 @@ public class Customer extends RepresentationModel<Customer> implements Serializa
 
     // list of dogs the customer owns
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnoreProperties({"customer"})
     @ToString.Exclude
     private List<Dog> dogs;
 }

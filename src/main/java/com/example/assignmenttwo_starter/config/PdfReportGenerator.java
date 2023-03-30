@@ -4,6 +4,7 @@ import com.example.assignmenttwo_starter.model.Customer;
 import com.example.assignmenttwo_starter.model.Dog;
 import com.example.assignmenttwo_starter.model.DogShowRegistration;
 import com.example.assignmenttwo_starter.model.ImageData;
+import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -11,20 +12,37 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.property.TextAlignment;
+
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public class PdfReportGenerator {
 
-
-
     public byte[] generateDogShowPdf(List<DogShowRegistration> registrations, LocalDate eventDate) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(outputStream);
         PdfDocument pdfDocument = new PdfDocument(writer);
         Document document = new Document(pdfDocument);
+
+        // Add title at the top of the document
+        try {
+            PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+            Paragraph titleParagraph = new Paragraph("Participants in Upcoming DogShow")
+                    .setFont(font)
+                    .setFontSize(18)
+                    .setTextAlignment(TextAlignment.CENTER);
+            document.add(titleParagraph);
+            document.add(new Paragraph("\n"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Add event date to the top of the document
         Paragraph eventDateParagraph = new Paragraph("Dog Show Event Date: " + eventDate.toString());

@@ -3,6 +3,8 @@ package com.example.assignmenttwo_starter.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -14,6 +16,9 @@ import java.time.LocalDate;
 @ToString
 @Entity
 @Table(name = "dog_show_registrations")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class DogShowRegistration extends RepresentationModel<DogShowRegistration> implements Serializable {
 
     @Id

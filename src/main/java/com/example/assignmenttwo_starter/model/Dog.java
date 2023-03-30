@@ -1,11 +1,14 @@
 package com.example.assignmenttwo_starter.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,6 +21,9 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "dogs")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Dog extends RepresentationModel<Dog> implements Serializable {
 
     @Id
@@ -30,7 +36,7 @@ public class Dog extends RepresentationModel<Dog> implements Serializable {
     private boolean vaccinated;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonIgnoreProperties({"dogs"})
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
     private Customer customer;
 

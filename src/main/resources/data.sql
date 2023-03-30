@@ -485,10 +485,10 @@ INSERT INTO `reviews` (`review_id`, `product_id`, `customer_id`, `rating`, `comm
 
 INSERT INTO `dogs` (`id`, `name`, `vaccinated`, `customer_id`)
 VALUES
-    (1, 'Buddy', true, 1),
-    (2, 'Daisy', true, 1),
-    (3, 'Max', true, 2),
-    (4, 'Bella', false, 2);;
+    (1, 'dog1', true, 1),
+    (2, 'dog2', true, 1),
+    (3, 'dog3', true, 2),
+    (4, 'dog4', false, 2);;
 
 
 INSERT INTO dog_show_registrations (event_date, customer_id, dog_id) VALUES ('2023-05-01', 1, 1);

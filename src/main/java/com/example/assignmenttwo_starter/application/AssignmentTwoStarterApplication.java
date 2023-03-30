@@ -8,6 +8,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -15,8 +20,11 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import java.util.Arrays;
+
 
 @SpringBootApplication
+@EnableCaching
 @ComponentScan({"com.example.assignmenttwo_starter.service", "com.example.assignmenttwo_starter.controller", "com.example.assignmenttwo_starter.repository", "com.example.assignmenttwo_starter.config"})
 @EntityScan("com.example.assignmenttwo_starter.model")
 @EnableJpaRepositories("com.example.assignmenttwo_starter.repository")
@@ -45,7 +53,7 @@ public class AssignmentTwoStarterApplication {
     @Autowired
     private JavaMailSender javaMailSender;
 
-
+    // for internationalisation of invoice generator
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -53,9 +61,25 @@ public class AssignmentTwoStarterApplication {
         return messageSource;
     }
 
+
     @Bean
     public PdfReportGenerator pdfReportGenerator() {
         return new PdfReportGenerator();
+    }
+
+    // manages caching
+    // decided to use multiple caches, 1 for each controller
+    @Bean
+    public CacheManager cacheManager() {
+        SimpleCacheManager cacheManager = new SimpleCacheManager();
+        cacheManager.setCaches(Arrays.asList(
+                new ConcurrentMapCache("customerCache"),
+                new ConcurrentMapCache("dogCache"),
+                new ConcurrentMapCache("dogShowCache"),
+                new ConcurrentMapCache("imageCache"),
+                new ConcurrentMapCache("storageCache")
+        ));
+        return cacheManager;
     }
 
     public static void main(String[] args) {

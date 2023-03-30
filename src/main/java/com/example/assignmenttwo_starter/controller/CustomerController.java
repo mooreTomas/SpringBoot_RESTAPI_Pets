@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.annotation.Order;
@@ -75,7 +76,7 @@ public class CustomerController {
     @Autowired
     private MessageSource messageSource;
 
-
+    @Cacheable(value = "customerCache", key = "'getAllCustomers'")
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<List<Customer>> getAllCustomers() {
         List<Customer> list = customerService.findAllCustomers();
@@ -88,6 +89,7 @@ public class CustomerController {
             return ResponseEntity.ok(list);
         }
     }
+
 
     @GetMapping(value = "/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity getOneCustomer(@PathVariable long customerId) {
@@ -151,6 +153,7 @@ public class CustomerController {
     // returns error String if customer doesn't exist
     // returns error String if order exists but collection is empty
     // otherwise returns order with associated products
+
     @GetMapping(value = "/order/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<?> getCustomerOrderInfo(@PathVariable long id) {
         Optional<Customer> optionalCustomer = customerService.findOneCustomer(id);
@@ -185,6 +188,7 @@ public class CustomerController {
 
 
     // get all order to tests prior method
+    @Cacheable (value = "customerCache", key = "'getAllOrders'")
     @GetMapping(value = "/orders", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<List<Orders>> getAllOrders() {
         List<Orders> orders = orderService.findAllOrders();
@@ -210,7 +214,7 @@ public class CustomerController {
     // id 34 has items and order information (for testing)
 
 
-    // "?" Response Entity in order to implement proper error handling, otherwise <ByteArrayResource>
+
     @GetMapping(value = "/invoice/{orderId}", produces = {MediaType.APPLICATION_PDF_VALUE, MediaType.TEXT_PLAIN_VALUE})
 
     public ResponseEntity<?> generateInvoice(@PathVariable long orderId, @RequestHeader(value = "Accept-Language", required = false) Locale locale) {

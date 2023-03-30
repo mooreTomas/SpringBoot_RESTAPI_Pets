@@ -31,9 +31,9 @@ public class AwsStorageService {
     private AmazonS3 s3Client;
 
 
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file, String newFileName) {
         File fileObj = convertMultiPartFileToFile(file);
-        String fileName = file.getOriginalFilename();
+        String fileName = newFileName;
         s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
         fileObj.delete();
         return "File uploaded : " + fileName;

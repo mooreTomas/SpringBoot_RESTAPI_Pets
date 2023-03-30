@@ -7,6 +7,7 @@ import com.example.assignmenttwo_starter.service.ImageDataService;
 import com.example.assignmenttwo_starter.service.StorageService;
 import com.example.assignmenttwo_starter.service.CustomerService;
 import com.example.assignmenttwo_starter.model.Customer;
+import com.example.assignmenttwo_starter.service.AwsStorageService;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class ImageController {
 
     @Autowired
     private DogService dogService;
+
+    @Autowired
+    private AwsStorageService awsStorageService;
 
     // 1 image per dog (customer can have more than 1 dog)
     @PostMapping("/{customerId}/{dogName}")
@@ -73,6 +77,11 @@ public class ImageController {
         }
 
         imageDataService.save(imageData);
+
+        // uploads to AWS bucket as well
+        // rename before uploading to AWS, so they can be identified
+        String newFileName = customerOptional.get().getCustomerId() + "_" + dog.getName();
+        awsStorageService.uploadFile(file, newFileName);
 
         String ownerName = customerOptional.get().getFirstName();
         return ResponseEntity.status(HttpStatus.CREATED).body("Image " + imageData.getName() + " of " + ownerName + "'s dog, " + dog.getName() + " was successfully uploaded");
@@ -130,7 +139,7 @@ public class ImageController {
         }
 
         if (imageData == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found for the specified dog");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No image found for " + dog.getName());
         }
 
         // Remove the image from the dog's images list and save the dog
@@ -139,7 +148,7 @@ public class ImageController {
         dogService.save(dog);
 
         imageDataService.deleteImage(imageData.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(customerOptional.get().getFirstName() + " 's" + " dog " + dogOptional.get().getName() + " 's associated image deleted, make sure to upload another image if you want one on the system!");
+        return ResponseEntity.status(HttpStatus.OK).body(customerOptional.get().getFirstName() + "'s" + " dog " + dogOptional.get().getName() + "'s associated image deleted, make sure to upload another image if you want one on the system!");
     }
 
 

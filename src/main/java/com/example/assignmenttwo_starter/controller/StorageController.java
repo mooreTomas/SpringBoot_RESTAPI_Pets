@@ -21,7 +21,7 @@ public class StorageController {
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) throws IOException {
-        return new ResponseEntity<>(awsStorageService.uploadFile(file), HttpStatus.OK);
+        return new ResponseEntity<>(awsStorageService.uploadFile(file, "test"), HttpStatus.OK);
     }
 
     @GetMapping("/download/{fileName}")
