@@ -36,6 +36,10 @@ public class DogService {
         return dogRepository.findDogByNameAndCustomerCustomerId(dogName, customerId);
     }
 
+    public Dog save(Dog dog) {
+        return dogRepository.save(dog);
+    }
+
 
 
 }

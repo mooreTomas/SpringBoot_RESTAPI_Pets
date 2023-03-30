@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,4 +33,9 @@ public class DogShowRegistrationService {
     public Optional<DogShowRegistration> findRegistrationByDogAndEventDate(Dog dog, LocalDate eventDate) {
         return dogShowRegistrationRepository.findByDogAndEventDate(dog, eventDate);
     }
+
+    public List<DogShowRegistration> findByEventDate(LocalDate eventDate) {
+        return dogShowRegistrationRepository.findByEventDate(eventDate);
+    }
+
 }

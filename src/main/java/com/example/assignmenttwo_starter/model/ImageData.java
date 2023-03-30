@@ -20,6 +20,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class ImageData extends RepresentationModel<ImageData> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

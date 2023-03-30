@@ -1,17 +1,20 @@
 package com.example.assignmenttwo_starter.controller;
 
+import com.example.assignmenttwo_starter.config.PdfReportGenerator;
 import com.example.assignmenttwo_starter.model.Customer;
 import com.example.assignmenttwo_starter.model.Dog;
 import com.example.assignmenttwo_starter.model.DogShowRegistration;
 import com.example.assignmenttwo_starter.service.CustomerService;
 import com.example.assignmenttwo_starter.service.DogService;
 import com.example.assignmenttwo_starter.service.DogShowRegistrationService;
+import com.example.assignmenttwo_starter.service.EmailService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -27,8 +30,14 @@ public class DogShowController {
     @Autowired
     private DogService dogService;
 
+    @Autowired
+    private PdfReportGenerator pdfReportGenerator;
+
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/register/{customerId}/{dogName}")
-    public ResponseEntity<?> registerDogForShow(@PathVariable Integer customerId, @PathVariable String dogName, @RequestParam("eventDate") String eventDateString) {
+    public ResponseEntity<?> registerDogForShow(@PathVariable Integer customerId, @PathVariable String dogName, @RequestParam("eventDate") String eventDateString, @RequestParam("email") String email) throws MessagingException {
         Optional<Customer> customerOptional = customerService.findOneCustomer(Long.valueOf(customerId));
         if (!customerOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
@@ -55,6 +64,12 @@ public class DogShowController {
         DogShowRegistration registration = new DogShowRegistration(null, eventDate, customerOptional.get(), dog);
         dogShowRegistrationService.saveDogShowRegistration(registration);
 
+        // Send confirmation email after successful registration
+        String subject = "Dog Show Registration Confirmation";
+        String body = "Congratulations! Your dog " + dog.getName() + " has been successfully registered for the dog show on " + eventDateString + ".";
+        List<DogShowRegistration> registrations = dogShowRegistrationService.findByEventDate(eventDate);
+        emailService.sendConfirmationEmailWithPdfAttachment(email, subject, body, registrations, eventDate);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Dog successfully registered for the show");
     }
 
@@ -69,7 +84,7 @@ public class DogShowController {
         return ResponseEntity.ok(registrationOptional.get());
     }
 
-    @DeleteMapping("/{registrationId}")
+    @DeleteMapping(value = "/{registrationId}", produces = {MediaType.APPLICATION_PDF_VALUE, MediaType.TEXT_PLAIN_VALUE})
     public ResponseEntity<?> deleteRegistration(@PathVariable Long registrationId) {
         Optional<DogShowRegistration> registrationOptional = dogShowRegistrationService.findRegistrationById(registrationId);
         if (!registrationOptional.isPresent()) {
@@ -79,4 +94,22 @@ public class DogShowController {
         dogShowRegistrationService.deleteRegistration(registrationId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @GetMapping("/report")
+    public ResponseEntity<byte[]> getDogShowReport(@RequestParam("eventDate") String eventDateString) {
+        LocalDate eventDate = LocalDate.parse(eventDateString);
+
+        List<DogShowRegistration> registrations = dogShowRegistrationService.findByEventDate(eventDate);
+
+        if (registrations != null && !registrations.isEmpty()) {
+            byte[] pdfBytes = pdfReportGenerator.generateDogShowPdf(registrations, eventDate);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("DogShowRegistrations_" + eventDateString + ".pdf").build());
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } else {
+            return (ResponseEntity<byte[]>) ResponseEntity.status(HttpStatus.NOT_FOUND);
+        }
+    }
 }
+

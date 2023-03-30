@@ -1,5 +1,6 @@
 package com.example.assignmenttwo_starter.application;
 
+import com.example.assignmenttwo_starter.config.PdfReportGenerator;
 import com.example.assignmenttwo_starter.repository.*;
 import com.example.assignmenttwo_starter.service.AwsStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-
+import org.springframework.mail.javamail.JavaMailSender;
 
 
 @SpringBootApplication
@@ -42,12 +42,20 @@ public class AssignmentTwoStarterApplication {
     @Autowired
     private DogShowRegistrationRepository dogShowRegistrationRepository;
 
+    @Autowired
+    private JavaMailSender javaMailSender;
+
 
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("messages");
         return messageSource;
+    }
+
+    @Bean
+    public PdfReportGenerator pdfReportGenerator() {
+        return new PdfReportGenerator();
     }
 
     public static void main(String[] args) {

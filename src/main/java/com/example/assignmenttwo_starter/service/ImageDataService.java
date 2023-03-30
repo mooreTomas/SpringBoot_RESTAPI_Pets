@@ -15,4 +15,8 @@ public class ImageDataService {
         return imageDataRepository.save(imageData);
     }
 
+    public void deleteImage(Long imageId){
+        imageDataRepository.deleteById(imageId);
+    }
+
 }
