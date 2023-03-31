@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,7 @@ public class DogShowController {
 
     @Autowired
     private EmailService emailService;
+
 
     @PostMapping("/register/{customerId}/{dogName}")
     @Operation(description = "Registers a dog for a dog show. Dog show is specified by eventDate. Dog is specified by dogName and customerId." +

@@ -8,6 +8,7 @@ import com.example.assignmenttwo_starter.model.*;
 
 import com.example.assignmenttwo_starter.service.CustomerService;
 import jakarta.validation.Valid;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.io.ByteArrayOutputStream;
@@ -109,6 +110,7 @@ public class CustomerController {
         }
     }
 
+    @CacheEvict(value = "customerCache", allEntries = true)
     @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(description = "Adds a customer to the database")
     public ResponseEntity addCustomer(@Valid @RequestBody Customer c) {
@@ -116,6 +118,7 @@ public class CustomerController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
+    @CacheEvict(value = "customerCache", allEntries = true)
     @PutMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity editCustomer(@RequestBody Customer c) {
         customerService.saveCustomer(c);
@@ -208,11 +211,13 @@ public class CustomerController {
     }
 
 
+    @CacheEvict(value = "customerCache", key = "'getAllCustomers'")
     @DeleteMapping("/{customerId}")
     public ResponseEntity deleteCustomer(@PathVariable long customerId) {
         customerService.deleteById(customerId);
         return new ResponseEntity(HttpStatus.OK);
     }
+
 
 
 
@@ -331,14 +336,6 @@ public class CustomerController {
 
 
 
-
-
-    @PutMapping("")
-    @Operation(description = "Updates Customer")
-    public ResponseEntity edit(@RequestBody Customer c) {
-        customerService.saveCustomer(c);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     // handles the validation errors
 

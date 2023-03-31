@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,6 +36,7 @@ public class DogController {
 //            @ApiResponse(responseCode = "201", description = "Dog created successfully"),
 //            @ApiResponse(responseCode = "404", description = "Customer not found")
 //    })
+    @CacheEvict(value = "dogCache", key = "'getAllDogs'")
     @PostMapping(value = "/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(description = "Creates a dog, and associates it with a customer based on specified id.")
     public ResponseEntity<?> createDog(
@@ -52,11 +54,7 @@ public class DogController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Your dog " + dog.getName() + " was added");
     }
 
-//    @ApiOperation(value = "Get dog by ID", notes = "Retrieves a dog by its unique ID.")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "Dog retrieved successfully"),
-//            @ApiResponse(responseCode = "404", description = "Dog not found")
-//    })
+
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(description = "Get dog based on specified id")
     public ResponseEntity<?> getDogById(@PathVariable Long id) {
@@ -88,6 +86,7 @@ public class DogController {
 //            @ApiResponse(responseCode = "204", description = "Dog deleted successfully"),
 //            @ApiResponse(responseCode = "404", description = "Dog not found")
 //    })
+    @CacheEvict(value = "dogCache", key = "'getAllDogs'")
     @DeleteMapping("/{id}")
     @Operation(description = "Delete dog based on id")
     public ResponseEntity<?> deleteDogById(@PathVariable Long id) {
@@ -102,6 +101,7 @@ public class DogController {
     }
 
 
+    @CacheEvict(value = "dogCache", key = "'getAllDogs'")
     @PutMapping("/{id}")
     @Operation(description = "update a dog absed on id")
     public ResponseEntity<?> updateDogById(
