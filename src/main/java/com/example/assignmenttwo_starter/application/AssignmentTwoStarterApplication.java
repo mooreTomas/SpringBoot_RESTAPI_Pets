@@ -19,11 +19,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.mail.javamail.JavaMailSender;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Arrays;
 
 
 @SpringBootApplication
+@EnableSwagger2
 @EnableCaching
 @ComponentScan({"com.example.assignmenttwo_starter.service", "com.example.assignmenttwo_starter.controller", "com.example.assignmenttwo_starter.repository", "com.example.assignmenttwo_starter.config"})
 @EntityScan("com.example.assignmenttwo_starter.model")
