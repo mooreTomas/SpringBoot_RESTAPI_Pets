@@ -126,6 +126,7 @@ public class CustomerController {
     }
 
     @GetMapping(value = "/{pageNo}/{pageSize}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaTypes.HAL_JSON_VALUE})
+    @Operation(description = "Returns all customers, paginated")
     public ResponseEntity getAllPagination(@PathVariable int pageNo, @PathVariable int pageSize) {
         List<Customer> list = customerService.findAllPaginated(pageNo, pageSize);
         if (list.isEmpty()) {
@@ -163,6 +164,7 @@ public class CustomerController {
     // otherwise returns order with associated products
 
     @GetMapping(value = "/order/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @Operation(description = "Returns order information in JSON based on specified customer id")
     public ResponseEntity<?> getCustomerOrderInfo(@PathVariable long id) {
         Optional<Customer> optionalCustomer = customerService.findOneCustomer(id);
         if (!optionalCustomer.isPresent()){
@@ -198,6 +200,7 @@ public class CustomerController {
     // get all order to tests prior method
     @Cacheable (value = "customerCache", key = "'getAllOrders'")
     @GetMapping(value = "/orders", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @Operation(description = "Gets all orders")
     public ResponseEntity<List<Orders>> getAllOrders() {
         List<Orders> orders = orderService.findAllOrders();
         for (Orders order : orders) {
@@ -213,6 +216,7 @@ public class CustomerController {
 
     @CacheEvict(value = "customerCache", key = "'getAllCustomers'")
     @DeleteMapping("/{customerId}")
+    @Operation(description = "Deletes a customer based on specified id")
     public ResponseEntity deleteCustomer(@PathVariable long customerId) {
         customerService.deleteById(customerId);
         return new ResponseEntity(HttpStatus.OK);
