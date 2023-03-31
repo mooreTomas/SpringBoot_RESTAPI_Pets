@@ -3,6 +3,7 @@ package com.example.assignmenttwo_starter.model;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -10,6 +11,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import com.example.assignmenttwo_starter.model.Dog;
 
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.List;
 @Entity
 @Table(name = "customers")
 public class Customer extends RepresentationModel<Customer> implements Serializable{
+
 
 
 
@@ -38,13 +41,18 @@ public class Customer extends RepresentationModel<Customer> implements Serializa
     @Column(name = "last_name")
     private String lastName;
 
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//consider using this annotation to enforce field validation
-    @Size(max = 255)
+    @Email(message = "Invalid email")
+    @NotNull
+    @Size(min = 5, max = 255, message = "email is required and must be in correct format!!!")
     @Column(name = "email")
-
     private String email;
 
-    // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//consider using this annotation to enforce field validation
+    @Pattern(regexp = "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message = "Invalid phone format, should be as xxx-xxx-xxxx")
+    // accepts these kinds of numbers: (123) 456-7890
+    // (123)456-7890
+    // 123-456-7890
+    // 123 456 7890
+    // 1234567890
     @Size(max = 20)
     @Column(name = "phone")
     private String phone;

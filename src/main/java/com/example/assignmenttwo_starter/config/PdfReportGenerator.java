@@ -34,7 +34,7 @@ public class PdfReportGenerator {
         // Add title at the top of the document
         try {
             PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-            Paragraph titleParagraph = new Paragraph("Participants in Upcoming DogShow")
+            Paragraph titleParagraph = new Paragraph("Participants in the Upcoming Dog Show")
                     .setFont(font)
                     .setFontSize(18)
                     .setTextAlignment(TextAlignment.CENTER);
@@ -54,8 +54,8 @@ public class PdfReportGenerator {
             Customer customer = registration.getCustomer();
 
             // Add customer and dog name
-            document.add(new Paragraph("Customer: " + customer.getFirstName() + " " + customer.getLastName()));
-            document.add(new Paragraph("Dog: " + dog.getName()));
+            document.add(new Paragraph(customer.getFirstName()+ " " + customer.getLastName()));
+            document.add(new Paragraph(dog.getName()));
 
             // Add dog image if it exists
             if (!dog.getImages().isEmpty()) {

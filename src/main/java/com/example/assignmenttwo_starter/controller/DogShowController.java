@@ -10,6 +10,7 @@ import com.example.assignmenttwo_starter.service.DogShowRegistrationService;
 import com.example.assignmenttwo_starter.service.EmailService;
 
 // import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
@@ -41,12 +42,9 @@ public class DogShowController {
     private EmailService emailService;
 
     @PostMapping("/register/{customerId}/{dogName}")
-//    @ApiOperation(value = "Register dog for dog show", notes = "Registers a dog for a dog show event")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "Dog registered successfully"),
-//            @ApiResponse(responseCode = "400", description = "Dog is not vaccinated"),
-//            @ApiResponse(responseCode = "404", description = "Customer or dog not found")
-//    })
+    @Operation(description = "Registers a dog for a dog show. Dog show is specified by eventDate. Dog is specified by dogName and customerId." +
+            "Email parameter allows confirmation email of the dog show to be sent to user." +
+            "Additionally, attached PDF in email. PDF is same as PDF method")
     public ResponseEntity<?> registerDogForShow(@PathVariable Integer customerId, @PathVariable String dogName, @RequestParam("eventDate") String eventDateString, @RequestParam("email") String email) throws MessagingException {
         Optional<Customer> customerOptional = customerService.findOneCustomer(Long.valueOf(customerId));
         if (!customerOptional.isPresent()) {
@@ -80,16 +78,12 @@ public class DogShowController {
         List<DogShowRegistration> registrations = dogShowRegistrationService.findByEventDate(eventDate);
         emailService.sendConfirmationEmailWithPdfAttachment(email, subject, body, registrations, eventDate);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Dog successfully registered for the show");
+        return ResponseEntity.status(HttpStatus.CREATED).body(dog.getName() + " has been successfully registered for the dog show");
     }
 
 
     @GetMapping("/{registrationId}")
-//    @ApiOperation(value = "Get dog show registration", notes = "Retrieves the dog show registration for the given registration ID")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "Registration found successfully"),
-//            @ApiResponse(responseCode = "404", description = "Registration not found")
-//    })
+    @Operation(description = "Gets a dog show registration based on specified id")
     public ResponseEntity<?> getRegistration(@PathVariable Long registrationId) {
         Optional<DogShowRegistration> registrationOptional = dogShowRegistrationService.findRegistrationById(registrationId);
         if (!registrationOptional.isPresent()) {
@@ -100,11 +94,7 @@ public class DogShowController {
     }
 
     @DeleteMapping(value = "/{registrationId}", produces = {MediaType.APPLICATION_PDF_VALUE, MediaType.TEXT_PLAIN_VALUE})
-//    @ApiOperation(value = "Delete dog show registration", notes = "Deletes the specified dog show registration")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "204", description = "Registration deleted successfully"),
-//            @ApiResponse(responseCode = "404", description = "Registration not found")
-//    })
+    @Operation(description = "deletes a registration from the dog show based on registration id")
     public ResponseEntity<?> deleteRegistration(@PathVariable Long registrationId) {
         Optional<DogShowRegistration> registrationOptional = dogShowRegistrationService.findRegistrationById(registrationId);
         if (!registrationOptional.isPresent()) {
@@ -116,11 +106,7 @@ public class DogShowController {
     }
 
     @GetMapping("/report")
-//    @ApiOperation(value = "Generate dog show report", notes = "Generates a PDF report of all registered dogs for the specified event date")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "Dog show report generated successfully"),
-//            @ApiResponse(responseCode = "404", description = "No registrations found for the specified event date")
-//    })
+    @Operation(description = "generates a pdf report. Populates report with images (if they exist) and names of dogs in the dog show according to the specified eventDate")
     public ResponseEntity<byte[]> getDogShowReport(@RequestParam("eventDate") String eventDateString) {
         LocalDate eventDate = LocalDate.parse(eventDateString);
 

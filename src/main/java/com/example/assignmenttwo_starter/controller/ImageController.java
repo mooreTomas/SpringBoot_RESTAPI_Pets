@@ -12,6 +12,7 @@ import java.util.List;
 
 
 // import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class ImageController {
 
     // 1 image per dog (customer can have more than 1 dog)
     @PostMapping("/{customerId}/{dogName}")
+    @Operation(description = "Allows upload of dog image to database. Associated with customer." +
+            "Additionally, uploads a 'backup file', which is renamed to customerId_dogName to AWS S3 Bucket." +
+            "Only 1 image per dog")
 //    @ApiOperation(value = "Upload an image for a dog", notes = "Uploads an image for the specified dog.")
 //    @ApiResponses({
 //            @ApiResponse(responseCode = "201", description = "Image uploaded successfully"),
@@ -98,11 +102,7 @@ public class ImageController {
     }
 
     @GetMapping("/{customerId}/{dogName}")
-//    @ApiOperation(value = "Download an image for a dog", notes = "Downloads the image for the specified dog.")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "Image downloaded successfully"),
-//            @ApiResponse(responseCode = "404", description = "Customer, dog or image not found")
-//    })
+    @Operation(description = "Gets dog image, if it exists, based on customerId and dogName")
     public ResponseEntity<?> downloadImage(@PathVariable Integer customerId, @PathVariable String dogName) {
         Optional<Customer> customerOptional = customerService.findOneCustomer(Long.valueOf(customerId));
         if (!customerOptional.isPresent()) {
@@ -133,11 +133,7 @@ public class ImageController {
     }
 
     @DeleteMapping("/{customerId}/{dogName}")
-//    @ApiOperation(value = "Delete an image for a dog", notes = "Deletes the image associated with the specified dog.")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "Image deleted successfully"),
-//            @ApiResponse(responseCode = "404", description = "Customer, dog or image not found")
-//    })
+    @Operation(description = "deletes dog's image from database, specified based on customer id and dogName")
     public ResponseEntity<?> deleteImage(@PathVariable Integer customerId, @PathVariable String dogName) {
         Optional<Customer> customerOptional = customerService.findOneCustomer(Long.valueOf(customerId));
         if (!customerOptional.isPresent()) {
