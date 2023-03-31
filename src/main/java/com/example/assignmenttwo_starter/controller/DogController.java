@@ -5,8 +5,8 @@ import com.example.assignmenttwo_starter.model.Dog;
 import com.example.assignmenttwo_starter.service.CustomerService;
 import com.example.assignmenttwo_starter.service.DogService;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+//import io.swagger.annotations.ApiOperation;
+//import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +29,14 @@ public class DogController {
     @Autowired
     private CustomerService customerService;
 
-    @ApiOperation(value = "Create a new dog", notes = "Creates a new dog for the specified customer ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Dog created successfully"),
-            @ApiResponse(responseCode = "404", description = "Customer not found")
-    })
+//    @ApiOperation(value = "Create a new dog", notes = "Creates a new dog for the specified customer ID")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "201", description = "Dog created successfully"),
+//            @ApiResponse(responseCode = "404", description = "Customer not found")
+//    })
     @PostMapping(value = "/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<?> createDog(
-            @ApiParam(value = "ID of the customer who owns the dog", required = true) @PathVariable Integer customerId,
-            @ApiParam(value = "Dog object to be created", required = true) @RequestBody Dog dog) {
+            @PathVariable Integer customerId, @RequestBody Dog dog) {
 
         Optional<Customer> optionalCustomer = customerService.findOneCustomer(customerId.longValue());
         if (!optionalCustomer.isPresent()) {
@@ -51,11 +50,11 @@ public class DogController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Your dog " + dog.getName() + " was added");
     }
 
-    @ApiOperation(value = "Get dog by ID", notes = "Retrieves a dog by its unique ID.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Dog retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Dog not found")
-    })
+//    @ApiOperation(value = "Get dog by ID", notes = "Retrieves a dog by its unique ID.")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Dog retrieved successfully"),
+//            @ApiResponse(responseCode = "404", description = "Dog not found")
+//    })
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<?> getDogById(@PathVariable Long id) {
         Optional<Dog> optionalDog = dogService.findOneDog(id);
@@ -70,21 +69,21 @@ public class DogController {
 
     @Cacheable(value = "dogCache", key = "'getAllDogs'")
     @GetMapping(value = "/all", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    @ApiOperation(value = "Get all dogs", notes = "Retrieves a list of all dogs")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Dogs retrieved successfully")
-    })
+//    @ApiOperation(value = "Get all dogs", notes = "Retrieves a list of all dogs")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Dogs retrieved successfully")
+//    })
     public ResponseEntity<List<Dog>> getAllDogs() {
         List<Dog> dogs = dogService.findAllDogs();
         return ResponseEntity.ok(dogs);
     }
 
 
-    @ApiOperation(value = "Delete dog by ID", notes = "Deletes the dog with the specified ID.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Dog deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Dog not found")
-    })
+//    @ApiOperation(value = "Delete dog by ID", notes = "Deletes the dog with the specified ID.")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "204", description = "Dog deleted successfully"),
+//            @ApiResponse(responseCode = "404", description = "Dog not found")
+//    })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteDogById(@PathVariable Long id) {
         Optional<Dog> optionalDog = dogService.findOneDog(id);
@@ -99,14 +98,14 @@ public class DogController {
 
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "Update dog by ID", notes = "Updates an existing dog based on the specified ID.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Dog updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Dog not found")
-    })
+//    @ApiOperation(value = "Update dog by ID", notes = "Updates an existing dog based on the specified ID.")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Dog updated successfully"),
+//            @ApiResponse(responseCode = "404", description = "Dog not found")
+//    })
     public ResponseEntity<?> updateDogById(
-            @ApiParam(value = "ID of the dog to be updated", example = "1") @PathVariable Long id,
-            @ApiParam(value = "Updated dog object") @RequestBody Dog updatedDog) {
+            @PathVariable Long id,
+            @RequestBody Dog updatedDog) {
 
         Optional<Dog> optionalDog = dogService.findOneDog(id);
         if (!optionalDog.isPresent()) {
