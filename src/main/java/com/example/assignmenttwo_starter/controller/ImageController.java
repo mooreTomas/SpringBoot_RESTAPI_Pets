@@ -10,6 +10,10 @@ import com.example.assignmenttwo_starter.model.Customer;
 import com.example.assignmenttwo_starter.service.AwsStorageService;
 import java.util.List;
 
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.http.HttpStatus;
@@ -44,6 +48,12 @@ public class ImageController {
 
     // 1 image per dog (customer can have more than 1 dog)
     @PostMapping("/{customerId}/{dogName}")
+    @ApiOperation(value = "Upload an image for a dog", notes = "Uploads an image for the specified dog.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Image uploaded successfully"),
+            @ApiResponse(responseCode = "400", description = "Image already exists for the dog"),
+            @ApiResponse(responseCode = "404", description = "Customer or dog not found")
+    })
     public ResponseEntity<?> uploadImage(@PathVariable Integer customerId, @PathVariable String dogName, @RequestParam("file") MultipartFile file) {
         Optional<Customer> customerOptional = customerService.findOneCustomer(Long.valueOf(customerId));
         if (!customerOptional.isPresent()) {
@@ -88,6 +98,11 @@ public class ImageController {
     }
 
     @GetMapping("/{customerId}/{dogName}")
+    @ApiOperation(value = "Download an image for a dog", notes = "Downloads the image for the specified dog.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Image downloaded successfully"),
+            @ApiResponse(responseCode = "404", description = "Customer, dog or image not found")
+    })
     public ResponseEntity<?> downloadImage(@PathVariable Integer customerId, @PathVariable String dogName) {
         Optional<Customer> customerOptional = customerService.findOneCustomer(Long.valueOf(customerId));
         if (!customerOptional.isPresent()) {
@@ -118,6 +133,11 @@ public class ImageController {
     }
 
     @DeleteMapping("/{customerId}/{dogName}")
+    @ApiOperation(value = "Delete an image for a dog", notes = "Deletes the image associated with the specified dog.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Image deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Customer, dog or image not found")
+    })
     public ResponseEntity<?> deleteImage(@PathVariable Integer customerId, @PathVariable String dogName) {
         Optional<Customer> customerOptional = customerService.findOneCustomer(Long.valueOf(customerId));
         if (!customerOptional.isPresent()) {
