@@ -7,6 +7,6 @@ This project makes use of a H2, in-memory database, and is a fully fledged API f
 - Pagination where appropriate
 - Consumes and produces JSONS, XMLs and text files
 - Basic validation when adding to database
-- Generate PDF functionality (which is internationalised depending on user locale)
+- Generate PDF functionality, HATEOAS principles - generate invoices (which is internationalised depending on user locale) 
 - Can upload images to in memory database, also a functionality in place to store same image in an AWS bucket online (as a backup/archive/redundancy)
-- JavaMailSender functionality incorporated
+- JavaMailSender functionality incorporated, sends email with attached PDF, images etc.
