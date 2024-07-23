@@ -22,6 +22,8 @@ public class CustomerService {
         return customerRepo.findById(id);
     }
 
+    public String findNamebyId(Long id) {return customerRepo.findCustomerNameById(id); }
+
     public List<Customer> findAllCustomers(){
         return (List<Customer>) customerRepo.findAll();
     }

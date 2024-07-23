@@ -43,6 +43,12 @@ public class DogShowController {
     private EmailService emailService;
 
 
+
+    // for testing, customer id of 2 has a dog named "dog3"
+    // customer id 1 already has their dog, "dog1" registered for this dog show
+    // dogShow is identified uniquely by its date
+    // use 2023-05-01 as the event date
+
     @PostMapping("/register/{customerId}/{dogName}")
     @Operation(description = "Registers a dog for a dog show. Dog show is specified by eventDate. Dog is specified by dogName and customerId." +
             "Email parameter allows confirmation email of the dog show to be sent to user." +

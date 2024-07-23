@@ -48,6 +48,9 @@ public class ImageController {
     private AwsStorageService awsStorageService;
 
     // 1 image per dog (customer can have more than 1 dog)
+    // try "dog1" owned by customerid of 1; "dog2" owned by id 1; "dog3" owned by id of 2
+
+
     @PostMapping("/{customerId}/{dogName}")
     @Operation(description = "Allows upload of dog image to database. Associated with customer." +
             "Additionally, uploads a 'backup file', which is renamed to customerId_dogName to AWS S3 Bucket." +
@@ -74,7 +77,7 @@ public class ImageController {
         // Check if image already exists for dog
         if (!dog.getImages().isEmpty()) {
 
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already have an image! Delete it before uploading a new image for");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already have an image! Delete it before uploading a new image for " + customerService.findNamebyId(Long.valueOf(customerId)) + " and their dog " + "'" + dogName + "'");
             }
 
 

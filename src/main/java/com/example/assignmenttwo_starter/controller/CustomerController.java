@@ -165,6 +165,7 @@ public class CustomerController {
     // returns error String if order exists but collection is empty
     // otherwise returns order with associated products
 
+    //86 is an example with orderItemCollection not empty
     @GetMapping(value = "/order/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(description = "Returns order information in JSON based on specified customer id")
     public ResponseEntity<?> getCustomerOrderInfo(@PathVariable long id) {
@@ -231,6 +232,7 @@ public class CustomerController {
 
 
 
+    // for testing, use id of 34
     @GetMapping(value = "/invoice/{orderId}", produces = {MediaType.APPLICATION_PDF_VALUE, MediaType.TEXT_PLAIN_VALUE})
     @Operation(description = "generates invoice based on orderid; invoices which aren't processing or shipping are ignored" +
             "and orderItemCollections that are empty won't have invoices generated either")
