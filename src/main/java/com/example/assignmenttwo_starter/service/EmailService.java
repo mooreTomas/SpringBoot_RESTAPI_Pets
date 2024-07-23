@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class EmailService {
+public class    EmailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
